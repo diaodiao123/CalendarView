@@ -119,7 +119,7 @@
         <!-- 手势模式 -->
         <attr name="gesture_mode">
             <enum name="default_mode" value="0" />
-            <!--<enum name="only_calendar" value="1" />-->
+            <enum name="only_calendar" value="1" />
             <enum name="disabled" value="2" />
         </attr>
 

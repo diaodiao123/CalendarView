@@ -126,7 +126,7 @@ public class CalendarLayout extends LinearLayout {
 //       /**
     //     * 仅日历有效
     //     */
-//    private static final int GESTURE_MODE_ONLY_CALENDAR = 1;
+    private static final int GESTURE_MODE_ONLY_CALENDAR = 1;
 
     /**
      * 禁用手势
@@ -510,6 +510,14 @@ public class CalendarLayout extends LinearLayout {
                     if ((dy > 0 && mContentView.getTranslationY() <= 0)
                             || (dy < 0 && mContentView.getTranslationY() >= -mContentViewTranslateY)) {
                         mLastY = y;
+                        if (mGestureMode==GESTURE_MODE_ONLY_CALENDAR){
+                            if(dy>0 && y>mCalendarView.getHeight()+mContentView.getTranslationY()){//向下滑动view,不要拦截view
+                                return false;
+                            }
+                            if(dy<0 && y>mCalendarView.getHeight()){
+                                return false;
+                            }
+                        }
                         return true;
                     }
                 }
