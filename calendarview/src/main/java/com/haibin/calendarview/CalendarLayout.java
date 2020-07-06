@@ -125,7 +125,7 @@ public class CalendarLayout extends LinearLayout {
 //       /**
     //     * 仅日历有效
     //     */
-//    private static final int GESTURE_MODE_ONLY_CALENDAR = 1;
+    private static final int GESTURE_MODE_ONLY_CALENDAR = 1;
 
     /**
      * 禁用手势
@@ -366,6 +366,10 @@ public class CalendarLayout extends LinearLayout {
                 }
                 //否则按比例平移
                 mContentView.setTranslationY(mContentView.getTranslationY() + dy);
+                if (mCalendarScrollListener!=null){
+                    float percent =dy/mContentViewTranslateY;
+                    mCalendarScrollListener.moveDis(percent);
+                }
                 translationViewPager();
                 mLastY = y;
                 break;
@@ -509,6 +513,14 @@ public class CalendarLayout extends LinearLayout {
                     if ((dy > 0 && mContentView.getTranslationY() <= 0)
                             || (dy < 0 && mContentView.getTranslationY() >= -mContentViewTranslateY)) {
                         mLastY = y;
+                        if (mGestureMode==GESTURE_MODE_ONLY_CALENDAR){
+                            if(dy>0 && y>mCalendarView.getHeight()+mContentView.getTranslationY()){//向下滑动view,不要拦截view
+                                return false;
+                            }
+                            if(dy<0 && y>mCalendarView.getHeight()){
+                                return false;
+                            }
+                        }
                         return true;
                     }
                 }
@@ -679,6 +691,9 @@ public class CalendarLayout extends LinearLayout {
      * @return 展开是否成功
      */
     public boolean expand(int duration) {
+        if (mCalendarScrollListener!=null){
+            mCalendarScrollListener.expandView();
+        }
         if (isAnimating ||
                 mCalendarShowMode == CALENDAR_SHOW_MODE_ONLY_WEEK_VIEW ||
                 mContentView == null)
@@ -732,6 +747,9 @@ public class CalendarLayout extends LinearLayout {
      * @return 成功或者失败
      */
     public boolean shrink(int duration) {
+        if (mCalendarScrollListener!=null){
+            mCalendarScrollListener.shirkView();
+        }
         if (mGestureMode == GESTURE_MODE_DISABLED) {
             requestLayout();
         }
@@ -953,5 +971,16 @@ public class CalendarLayout extends LinearLayout {
          * @return 是否滚动到顶部
          */
         boolean isScrollToTop();
+    }
+
+    public interface CalendarScrollListener{
+        void expandView();
+        void shirkView();
+        void moveDis(float dy);//控件滑动的距离
+    }
+    private CalendarScrollListener mCalendarScrollListener;
+
+    public void setCalendarScrollListener(CalendarScrollListener listener){
+        mCalendarScrollListener=listener;
     }
 }
